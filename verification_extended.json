@@ -1,0 +1,66 @@
+[
+  {
+    "name": "R1200",
+    "sha256": "1a3453a0cc502876d6784fcdd28fe66253ee81fd86d5cb779023a77b4cfb0322",
+    "g": 6,
+    "connected": true,
+    "regular": true,
+    "simple": true
+  },
+  {
+    "name": "R2400",
+    "sha256": "51bfd40315d0e93b192b1a5677b667ef596e1aff0c38f588b32cd18a2f107c69",
+    "g": 6,
+    "connected": true,
+    "regular": true,
+    "simple": true
+  },
+  {
+    "name": "P1200",
+    "sha256": "a710c06b01a43221c7b8d9e4df50d82b84a20e9d44891798ba042e2ee4551ffe",
+    "g": 8,
+    "connected": true,
+    "regular": true,
+    "simple": true
+  },
+  {
+    "name": "P1600",
+    "sha256": "d9a01d90d1bf8b6634bfb7ea276db555b4780e91119934a2863b4424286f5a75",
+    "g": 10,
+    "connected": true,
+    "regular": true,
+    "simple": true
+  },
+  {
+    "name": "Pet64",
+    "sha256": "dec7809ef80ad247ef304b44eab642f107e350793d6d93391904191cf2e0617c",
+    "g": 10,
+    "connected": true,
+    "regular": true,
+    "simple": true
+  },
+  {
+    "name": "HS128",
+    "sha256": "da8e7aa8f3611a145d887495516475794391df86d74ef5a55dbd059eb964fbcc",
+    "g": 10,
+    "connected": true,
+    "regular": true,
+    "simple": true
+  },
+  {
+    "name": "F3c32",
+    "sha256": "981a1b29e635395eedbf0dfd0f4e28fe0dcead4924db046e0f17b69509ace709",
+    "g": 12,
+    "connected": true,
+    "regular": true,
+    "simple": true
+  },
+  {
+    "name": "F5c64",
+    "sha256": "89d5d0bf731d201ee852e9e2b9c43de3af446464e599ec4f31931e4dfa2179c4",
+    "g": 12,
+    "connected": true,
+    "regular": true,
+    "simple": true
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Pet64",
+    "n": 960,
+    "m": 640,
+    "dv": 2,
+    "dc": 3,
+    "g": 10,
+    "T": 10,
+    "base": "Petersen",
+    "lift": 64,
+    "kind": "cyclic",
+    "family": "column-weight-two-incidence",
+    "expected_Ng": 512
+  },
+  {
+    "name": "HS128",
+    "n": 22400,
+    "m": 6400,
+    "dv": 2,
+    "dc": 7,
+    "g": 10,
+    "T": 10,
+    "base": "Hoffman-Singleton",
+    "lift": 128,
+    "kind": "cyclic",
+    "family": "column-weight-two-incidence",
+    "expected_Ng": 156672
+  },
+  {
+    "name": "F3c32",
+    "n": 1664,
+    "m": 832,
+    "dv": 2,
+    "dc": 4,
+    "g": 12,
+    "T": 12,
+    "base": "PG(2,3) incidence",
+    "lift": 32,
+    "kind": "cyclic",
+    "family": "column-weight-two-incidence",
+    "expected_Ng": 6624
+  },
+  {
+    "name": "F5c64",
+    "n": 11904,
+    "m": 3968,
+    "dv": 2,
+    "dc": 6,
+    "g": 12,
+    "T": 12,
+    "base": "PG(2,5) incidence",
+    "lift": 64,
+    "kind": "cyclic",
+    "family": "column-weight-two-incidence",
+    "expected_Ng": 240000
+  }
+]

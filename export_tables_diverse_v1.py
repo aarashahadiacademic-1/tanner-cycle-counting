@@ -2,8 +2,8 @@ import csv,json,pathlib
 P=pathlib.Path(__file__).resolve().parent
 rows=json.loads((P/'results.json').read_text())
 lookup={(r['name'],r['T']):r for r in rows}
-EXACT=[('R1200',6),('P1600',10),('Pet64',10),('HS128',10),('F3c32',12),('F5c64',12),('A128r',10),('A128c',10),('D1c',14)]
-HYBRID=['A16c','A128r','A128c','B128c','C128c','D16c','R1200','P1200','P1600','Pet64','HS128','F3c32','F5c64']
+EXACT=[('A128r',6),('C128r',6),('R1200',6),('R2400',6),('P1200',8),('P1600',10),('A128r',10),('A128c',10),('D1c',14)]
+HYBRID=['A32c','A128r','A128c','B128r','B128c','C128r','C128c','D16r','D16c','R1200','R2400','P1200','P1600']
 with (P/'table1_exact.csv').open('w',newline='') as f:
  w=csv.writer(f);w.writerow(['graph','dv','dc','g','n','T','count_tuple','ours_ms','KB_ms','speedup'])
  for key in EXACT:

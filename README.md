@@ -25,11 +25,11 @@ Requires Python 3 and GNU g++ with C++17 support; no additional Python packages.
 g++ -std=c++17 -O3 -Wall -Wextra counter.cpp -o counter
 python3 run_tables.py
 python3 verify.py
-python3 verify_diverse.py
+python3 verify_extended.py
 python3 export_tables.py
 ```
 
-`run_tables.py` uses the supplied edge lists. To regenerate the original and new families, run `python3 generate.py` and `python3 generate_diverse.py`, respectively.
+`run_tables.py` uses the supplied edge lists. To regenerate the original and new families, run `python3 generate.py` and `python3 generate_diverse.py`; run `python3 generate_highgirth.py` for the cycle-code family.
 **Do not compile with `-DNDEBUG`: the original measurement harness uses assertions that execute and verify the timed algorithms.**
 `run_tables.py` overwrites `results.json`, and `verify.py` overwrites `verification.json`; retain copies if the original measurements are needed.
 The stored measurements used GNU g++ 13.3.0, Python 3.12.14, and an AMD EPYC 9V74 shared container. Counting times are medians of seven runs. Hybrid times and errors average 100 runs with target r=100, pilot n trials, and second-stage cap 10n. Both pilot and exact fallback are timed. Sampling uses seed 20261009+n. New wall-clock timings depend on hardware and load and need not equal the saved values.
@@ -40,7 +40,7 @@ Table I: same-target comparisons of our exact routine with our KB implementation
 
 Table II: hybrid estimation. Speedup = median girth-only exact time / mean hybrid time. MARE (%) is the mean absolute relative error multiplied by 100 over all outputs, including exact returns.
 
-A--D graph labels specify the base, lift size, and cyclic (`c`) or random (`r`) lift. R/P labels give variable-node counts. The generators and manifest provide construction details. The regular benchmarks are synthetic Tanner graphs with degree pairs (3,6), (3,4), and (4,8), not standardized LDPC codes. Cactus graphs are mathematical correctness tests. No decoding-performance or matrix-rank claim is made.
+A--D graph labels specify the base, lift size, and cyclic (`c`) or random (`r`) lift. R/P labels give variable-node counts. The generators and manifest provide construction details. The benchmarks include variable degrees 2, 3, and 4 and girths 6, 8, 10, and 12. They are synthetic Tanner graphs, not standardized LDPC codes. Cactus graphs are mathematical correctness tests. No decoding-performance or matrix-rank claim is made.
 
 ## Independent checks and limits
 
@@ -48,17 +48,27 @@ The KB routine is our own implementation based on Karimi and Banihashemi, arXiv:
 
 Edge-list files start with `n m E`, followed by zero-based variable/check endpoint pairs. The C++ implementation uses unsigned 64-bit counters; the supplied benchmark counts fit, but larger inputs/targets can overflow and require arbitrary-precision counters. Very long targets can entail exponential work.
 
-## Broadened benchmark selection (2026-10-09)
+## Current high-girth, cycle-rich selection (2026-10-09)
 
-Four base construction families are represented: affine incidence (A--C), split symplectic generalized quadrangle (D), random socket pairing repaired by switches (R), and our degree-constrained PEG variant (P).
+Both tables keep their original row counts (9 exact, 13 hybrid). Earlier measurements and selections remain in files ending `_original` or `_diverse_v1`; only the current CSV files correspond to the current tables. All current selected rows were freshly timed under one protocol.
 
-Table I retains 9 rows: A256r at T=6, A128r at T=8, D16r at T=8, and D16r at T=10 are replaced by R1200, R2400, P1200, and P1600 at their girths. The two longer-target rows favoring KB remain.
-Table II retains 13 rows: A8c, A16c, A256r, and A256c are replaced by the same four new graphs. The matched A128, B128, C128, and D16 cyclic/random pairs remain. All selected rows were freshly measured under the same protocol; no old/new timing mixture is used. The new samples use fixed predeclared seeds and are not selected for runtime outcomes.
+`generate_diverse.py` builds socket-pairing graphs repaired by switches (R) and our degree-constrained PEG variant (P). Repaired graphs are not claimed to be uniformly distributed. PEG prioritizes distance, then minimum degree, then random ties among checks with remaining capacity; it restarts if completion without four-cycles fails.
 
-`generate_diverse.py` constructs the four R/P samples. Socket pairing rejects parallel edges; degree-preserving two-switches remove four-cycles without introducing new ones. These repaired graphs are **not claimed to be uniform draws** from the girth-constrained ensemble. PEG attaches edges at maximum distance among checks with remaining degree capacity, breaks ties by minimum degree then random selection, and restarts if completion without four-cycles becomes impossible. This is our implementation of a degree-constrained variant, not the original authors' code or standardized codes.
+`generate_highgirth.py` adds four positive-rate, column-weight-two **cycle-code** benchmarks, not cactus tests:
 
-The R1200/R2400 degree pairs are (4,8)/(3,6); P1200/P1600 use (3,6)/(3,4) and realized girths 8/10. All four new samples route to exact fallback in all 100 runs, illustrating limits of hybrid acceleration rather than concealing them. `verification_diverse.json` records independent degree, girth, connectivity, simplicity, and edge-hash checks. The C++ harness additionally checks count equality against exhaustive NB enumeration and KB.
+| Label | Ordinary graph | Tanner degree pair | Lift | Girth | Exact count |
+|---|---|---|---|---|---|
+| Pet64 | Petersen | (2,3) | 64 | 10 | 512 |
+| HS128 | Hoffman--Singleton | (2,7) | 128 | 10 | 156672 |
+| F3c32 | projective-plane incidence graph over F3 | (2,4) | 32 | 12 | 6624 |
+| F5c64 | projective-plane incidence graph over F5 | (2,6) | 64 | 12 | 240000 |
 
-PEG reference: X.-Y. Hu, E. Eleftheriou, and D. M. Arnold, IEEE Transactions on Information Theory 51(1), 386--398 (2005), doi:10.1109/TIT.2004.839541.
+An ordinary edge becomes a variable and an ordinary vertex becomes a check, doubling ordinary girth. The Tanner incidence graphs are cyclically lifted, shifting the lexicographically first incidence edge by one and leaving other permutations as identity. This produces connected regular graphs with cycles inherited from their structured bases. It is a deliberate cycle-rich regime; these examples do not represent arbitrary degree-three LDPC families or establish decoding quality. We retain degree-three and degree-four samples and both longer-target rows favoring KB.
 
-`paper_table_replacements.tex` supplies the construction subsection, revised tables, interpretation paragraph, and PEG bibliography entry.
+Independent cycle-count identities: the Petersen and Hoffman--Singleton graphs have 12 and 1260 girth-five cycles; an edge lies on 4 and 36, respectively. For a projective plane of prime order q, the girth-six count of its incidence graph is C(q^2+q+1,3) minus (q^2+q+1)C(q+1,3), and the cycles through an edge number six times the count divided by the edge count. A one-edge nonzero voltage removes those base girth cycles from the lifted girth count. Consequently the counts per lift copy are 8, 1224, 207, and 3750. Exhaustive non-backtracking enumeration and KB independently confirm every reported count.
+
+The four high-girth samples use inverse sampling in all 100 runs. HS128, F3c32, and F5c64 gain in runtime; Pet64 retains the opposite outcome because exact counting is already cheap. A16c provides mixed routing, while A128r, R1200, and PEG instances demonstrate exact fallback.
+
+`verify_extended.py` checks all eight added graphs for simplicity, connectivity, exact degrees, girth, and hashes. `verification_extended.json` records its output. `paper_table_replacements.tex` contains construction, both tables, updated interpretation, and bibliography entries.
+
+References: Hu, Eleftheriou, and Arnold, IEEE TIT 51(1), 386--398 (2005), doi:10.1109/TIT.2004.839541 (PEG); Malema and Liebelt, EURASIP JWCN 2007, 048158, doi:10.1155/2007/48158 (column-weight-two LDPC construction). The Hoffman--Singleton generator uses the pentagon/pentagram construction documented by NetworkX; the implementation here is independent and has no third-party package dependency.

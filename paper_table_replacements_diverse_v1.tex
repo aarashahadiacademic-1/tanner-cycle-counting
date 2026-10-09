@@ -1,0 +1,109 @@
+% Replace subsection A with the following.
+\subsection{Benchmark Construction}
+We describe the Tanner graphs used in
+Tables~\ref{tab:exact-exp} and~\ref{tab:hybrid-exp}.
+Small degrees reduce the alternating branching factors in $\omega$,
+motivating small-degree benchmarks. These are synthetic sparse
+parity-check matrices, not standardized codes or decoding-performance tests.
+
+Bases A--C use point--line incidence $y=sx+b$ over $\mathbb F_Q$,
+the finite field with $Q$ elements, with
+$x\in\{0,\ldots,d_c-1\}$ and $s\in\{0,\ldots,d_v-1\}$.
+Their parameters $(Q,d_v,d_c)$ are $(7,3,6)$, $(5,3,4)$, and
+$(11,4,8)$, respectively. This gives the stated degrees and excludes
+$4$-cycles. Base D is obtained from the symplectic generalized quadrangle
+ over $\mathbb F_5$ by splitting each degree-six point into two
+ degree-three variables; it has 312 variables, 156 checks, and girth eight.
+Labels A--D specify the base, lift size, and cyclic ($c$) or random ($r$) lift.
+
+R1200 and R2400 are constructed by random socket pairing, rejecting
+parallel edges and removing $4$-cycles by degree-preserving switches.
+P1200 and P1600 use our degree-constrained variant of progressive
+edge growth (PEG)~\cite{hu2005}: each new edge selects a check of maximum
+current distance with remaining capacity, breaking ties by minimum degree
+and then randomly. Construction restarts if the degree constraints
+cannot be completed without $4$-cycles. The R/P label gives the number
+of variable nodes. Thus the benchmarks span four construction families.
+Generators, fixed seeds, and realized edge lists are in the repository
+linked above. Every graph was checked for simplicity, connectivity,
+degrees, and girth; exact girth-cycle counts agree with independent
+exhaustive NB enumeration.
+
+% Replace Table I with the following.
+\begin{table*}[t]
+\centering
+\caption{Same-target exact comparison; milliseconds, medians of seven runs.
+The count tuple lists every even length from $g$ through $T$.
+Speedup is KB time divided by our exact time; values below one favor KB.}
+\label{tab:exact-exp}
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lccrrlrrr}
+\hline
+Graph & $(d_v,d_c)$ & $g$ & $n$ & $T$ & $(N_g,\ldots,N_T)$ & Ours & KB & Speedup\\
+\hline
+A128r & $(3,6)$ & 6 & $5,376$ & 6 & $(176)$ & $6.119$ & $56.244$ & $9.19\times$\\
+C128r & $(4,8)$ & 6 & $11,264$ & 6 & $(1,590)$ & $46.898$ & $952.779$ & $20.32\times$\\
+R1200 & $(4,8)$ & 6 & $1,200$ & 6 & $(1,564)$ & $4.106$ & $48.016$ & $11.69\times$\\
+R2400 & $(3,6)$ & 6 & $2,400$ & 6 & $(155)$ & $2.947$ & $25.498$ & $8.65\times$\\
+P1200 & $(3,6)$ & 8 & $1,200$ & 8 & $(65)$ & $3.977$ & $45.746$ & $11.50\times$\\
+P1600 & $(3,4)$ & 10 & $1,600$ & 10 & $(11)$ & $5.272$ & $71.769$ & $13.61\times$\\
+A128r & $(3,6)$ & 6 & $5,376$ & 10 & $(176, 1,709, 8,987)$ & $618.046$ & $1526.063$ & $2.47\times$\\
+A128c & $(3,6)$ & 6 & $5,376$ & 10 & $(20,480, 203,904, 1,069,056)$ & $438.341$ & $34.202$ & $0.08\times$\\
+D1c & $(3,6)$ & 8 & $312$ & 14 & $(3,638, 15,670, 142,582, 1,111,500)$ & $972.965$ & $13.180$ & $0.01\times$\\
+\hline
+\end{tabular}
+\end{table*}
+
+% Replace Table II with the following.
+\begin{table}[!ht]
+\centering
+\caption{Hybrid estimation over 100 runs.
+Here $n$ is the number of variable nodes, $N_g$ is the exact girth-cycle
+count, and $\lambda=gN_g/B$ is the expected number of closures in the
+$n$-trial pilot.
+Speedup is the median exact time over seven runs divided by the mean
+hybrid time over 100 runs; values above one favor the hybrid method.
+Hybrid time includes screening and exact fallback.
+MARE is the mean of $100|\widetilde N_g-N_g|/N_g$ over all 100 outputs,
+including exact returns.}
+\label{tab:hybrid-exp}
+\footnotesize
+\setlength{\tabcolsep}{3.6pt}
+\begin{tabular}{lccrrrrr}
+\hline
+Graph & $(d_v,d_c)$ & $g$ & $n$ & $N_g$ & $\lambda$
+& Speedup & mare (\%)\\
+\hline
+A32c & $(3,6)$ & 6 & $1,344$ & $5,120$ & $20.48$ & $1.47\times$ & $8.6$\\
+A128r & $(3,6)$ & 6 & $5,376$ & $176$ & $0.70$ & $0.89\times$ & $0.0$\\
+A128c & $(3,6)$ & 6 & $5,376$ & $20,480$ & $81.92$ & $3.40\times$ & $7.3$\\
+B128r & $(3,4)$ & 6 & $2,560$ & $44$ & $0.81$ & $0.82\times$ & $0.0$\\
+B128c & $(3,4)$ & 6 & $2,560$ & $4,608$ & $85.33$ & $1.75\times$ & $7.3$\\
+C128r & $(4,8)$ & 6 & $11,264$ & $1,590$ & $0.77$ & $0.98\times$ & $0.0$\\
+C128c & $(4,8)$ & 6 & $11,264$ & $204,928$ & $99.58$ & $9.06\times$ & $8.2$\\
+D16r & $(3,6)$ & 8 & $4,992$ & $3,663$ & $1.95$ & $0.85\times$ & $0.0$\\
+D16c & $(3,6)$ & 8 & $4,992$ & $57,680$ & $30.76$ & $4.52\times$ & $7.7$\\
+R1200 & $(4,8)$ & 6 & $1,200$ & $1,564$ & $0.76$ & $0.96\times$ & $0.0$\\
+R2400 & $(3,6)$ & 6 & $2,400$ & $155$ & $0.62$ & $0.88\times$ & $0.0$\\
+P1200 & $(3,6)$ & 8 & $1,200$ & $65$ & $0.035$ & $0.92\times$ & $0.0$\\
+P1600 & $(3,4)$ & 10 & $1,600$ & $11$ & $0.009$ & $0.97\times$ & $0.0$\\
+\hline
+\end{tabular}
+\end{table}
+
+% Replace the paragraph after Table II with the following.
+Table~\ref{tab:hybrid-exp} uses $r=100$ and $K=10n$.
+Zero MARE results from exact fallback in every run.
+The random-pairing and PEG instances also trigger exact fallback,
+showing that their high girth or non-algebraic construction alone does
+not favor sampling. Matched cyclic/random lifts retain the contrast
+between cycle-rich and closure-sparse regimes. The results support
+hybrid estimation at high normalized closure abundance on the tested
+graphs, without implying superiority across LDPC families.
+
+% Add the following bibliography item.
+\bibitem{hu2005}
+X.-Y. Hu, E. Eleftheriou, and D. M. Arnold,
+``Regular and irregular progressive edge-growth Tanner graphs,''
+\emph{IEEE Trans. Inf. Theory}, vol. 51, no. 1, pp. 386--398, 2005.
