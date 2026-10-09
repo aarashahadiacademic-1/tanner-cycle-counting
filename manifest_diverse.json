@@ -1,0 +1,50 @@
+[
+  {
+    "name": "R1200",
+    "n": 1200,
+    "m": 600,
+    "dv": 4,
+    "dc": 8,
+    "seed": 202610091,
+    "family": "random-regular",
+    "T": 6,
+    "repair_switches": 125,
+    "g": 6
+  },
+  {
+    "name": "R2400",
+    "n": 2400,
+    "m": 1200,
+    "dv": 3,
+    "dc": 6,
+    "seed": 202610092,
+    "family": "random-regular",
+    "T": 6,
+    "repair_switches": 25,
+    "g": 6
+  },
+  {
+    "name": "P1200",
+    "n": 1200,
+    "m": 600,
+    "dv": 3,
+    "dc": 6,
+    "seed": 202610093,
+    "family": "degree-constrained-PEG",
+    "T": 8,
+    "restarts": 0,
+    "g": 8
+  },
+  {
+    "name": "P1600",
+    "n": 1600,
+    "m": 1200,
+    "dv": 3,
+    "dc": 4,
+    "seed": 202610094,
+    "family": "degree-constrained-PEG",
+    "T": 10,
+    "restarts": 0,
+    "g": 10
+  }
+]

@@ -1,0 +1,750 @@
+[
+  {
+    "name": "A1c",
+    "n": 42,
+    "m": 21,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 1,
+    "kind": "cyclic",
+    "seed": 20261709,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 168
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 0.027681,
+    "kb_ms": 0.075702,
+    "hybrid_ms": 0.03857681,
+    "mean_estimate": 168,
+    "MARE_percent": 0,
+    "lambda": 0.672,
+    "routes": [
+      100,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "A2c",
+    "n": 84,
+    "m": 42,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 2,
+    "kind": "cyclic",
+    "seed": 20261710,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 320
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 0.055733,
+    "kb_ms": 0.163361,
+    "hybrid_ms": 0.1102315,
+    "mean_estimate": 320,
+    "MARE_percent": 0,
+    "lambda": 1.28,
+    "routes": [
+      100,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "A4c",
+    "n": 168,
+    "m": 84,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 4,
+    "kind": "cyclic",
+    "seed": 20261712,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 640
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 0.111945,
+    "kb_ms": 0.364158,
+    "hybrid_ms": 0.1842848,
+    "mean_estimate": 640,
+    "MARE_percent": 0,
+    "lambda": 2.56,
+    "routes": [
+      97,
+      3,
+      0
+    ]
+  },
+  {
+    "name": "A8c",
+    "n": 336,
+    "m": 168,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 8,
+    "kind": "cyclic",
+    "seed": 20261716,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 1280
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 0.266613,
+    "kb_ms": 0.843756,
+    "hybrid_ms": 0.71275936,
+    "mean_estimate": 1280,
+    "MARE_percent": 0,
+    "lambda": 5.12,
+    "routes": [
+      65,
+      35,
+      0
+    ]
+  },
+  {
+    "name": "A16c",
+    "n": 672,
+    "m": 336,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 16,
+    "kind": "cyclic",
+    "seed": 20261724,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 2560
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 0.564294,
+    "kb_ms": 1.679341,
+    "hybrid_ms": 1.20887697,
+    "mean_estimate": 2621.952636,
+    "MARE_percent": 2.927319669,
+    "lambda": 10.24,
+    "routes": [
+      4,
+      48,
+      48
+    ]
+  },
+  {
+    "name": "A32c",
+    "n": 1344,
+    "m": 672,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 32,
+    "kind": "cyclic",
+    "seed": 20261740,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 5120
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 1.444654,
+    "kb_ms": 4.610331,
+    "hybrid_ms": 0.91934987,
+    "mean_estimate": 5075.74828,
+    "MARE_percent": 8.581615959,
+    "lambda": 20.48,
+    "routes": [
+      0,
+      0,
+      100
+    ]
+  },
+  {
+    "name": "A128c",
+    "n": 5376,
+    "m": 2688,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 128,
+    "kind": "cyclic",
+    "seed": 20261836,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 20480
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 6.898661,
+    "kb_ms": 17.907325,
+    "hybrid_ms": 2.15706729,
+    "mean_estimate": 20330.05289,
+    "MARE_percent": 7.334369851,
+    "lambda": 81.92,
+    "routes": [
+      0,
+      0,
+      100
+    ]
+  },
+  {
+    "name": "A128r",
+    "n": 5376,
+    "m": 2688,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 128,
+    "kind": "random",
+    "seed": 20261836,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 176
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 7.673746,
+    "kb_ms": 77.919726,
+    "hybrid_ms": 9.76365068,
+    "mean_estimate": 176,
+    "MARE_percent": 0,
+    "lambda": 0.704,
+    "routes": [
+      100,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "A256c",
+    "n": 10752,
+    "m": 5376,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 256,
+    "kind": "cyclic",
+    "seed": 20261964,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 40960
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 15.683589,
+    "kb_ms": 46.324616,
+    "hybrid_ms": 4.31749907,
+    "mean_estimate": 40579.13955,
+    "MARE_percent": 8.373639505,
+    "lambda": 163.84,
+    "routes": [
+      0,
+      0,
+      100
+    ]
+  },
+  {
+    "name": "A256r",
+    "n": 10752,
+    "m": 5376,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 256,
+    "kind": "random",
+    "seed": 20261964,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 165
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 21.61348,
+    "kb_ms": 179.931846,
+    "hybrid_ms": 23.15440656,
+    "mean_estimate": 165,
+    "MARE_percent": 0,
+    "lambda": 0.66,
+    "routes": [
+      100,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "B128c",
+    "n": 2560,
+    "m": 1920,
+    "dv": 3,
+    "dc": 4,
+    "base": "B",
+    "lift": 128,
+    "kind": "cyclic",
+    "seed": 20261636,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 4608
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 1.13045,
+    "kb_ms": 3.610645,
+    "hybrid_ms": 0.60832975,
+    "mean_estimate": 4611.681837,
+    "MARE_percent": 7.260553714,
+    "lambda": 85.33333333,
+    "routes": [
+      0,
+      0,
+      100
+    ]
+  },
+  {
+    "name": "B128r",
+    "n": 2560,
+    "m": 1920,
+    "dv": 3,
+    "dc": 4,
+    "base": "B",
+    "lift": 128,
+    "kind": "random",
+    "seed": 20261636,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 44
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 1.627515,
+    "kb_ms": 10.403021,
+    "hybrid_ms": 1.91973168,
+    "mean_estimate": 44,
+    "MARE_percent": 0,
+    "lambda": 0.8148148148,
+    "routes": [
+      100,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "C128c",
+    "n": 11264,
+    "m": 5632,
+    "dv": 4,
+    "dc": 8,
+    "base": "C",
+    "lift": 128,
+    "kind": "cyclic",
+    "seed": 20262236,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 204928
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 48.717004,
+    "kb_ms": 117.702626,
+    "hybrid_ms": 5.08433673,
+    "mean_estimate": 202035.3242,
+    "MARE_percent": 8.210212187,
+    "lambda": 99.57628766,
+    "routes": [
+      0,
+      0,
+      100
+    ]
+  },
+  {
+    "name": "C128r",
+    "n": 11264,
+    "m": 5632,
+    "dv": 4,
+    "dc": 8,
+    "base": "C",
+    "lift": 128,
+    "kind": "random",
+    "seed": 20262236,
+    "T": 6,
+    "g": 6,
+    "counts": {
+      "6": 1590
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 54.312268,
+    "kb_ms": 1180.561509,
+    "hybrid_ms": 60.75895896,
+    "mean_estimate": 1590,
+    "MARE_percent": 0,
+    "lambda": 0.7725947522,
+    "routes": [
+      100,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "D1c",
+    "n": 312,
+    "m": 156,
+    "dv": 3,
+    "dc": 6,
+    "base": "D",
+    "lift": 1,
+    "kind": "cyclic",
+    "seed": 20261509,
+    "T": 8,
+    "g": 8,
+    "counts": {
+      "8": 3638
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 1.228976,
+    "kb_ms": 5.307522,
+    "hybrid_ms": 1.60313714,
+    "mean_estimate": 3638,
+    "MARE_percent": 0,
+    "lambda": 1.940266667,
+    "routes": [
+      99,
+      1,
+      0
+    ]
+  },
+  {
+    "name": "D16r",
+    "n": 4992,
+    "m": 2496,
+    "dv": 3,
+    "dc": 6,
+    "base": "D",
+    "lift": 16,
+    "kind": "random",
+    "seed": 20261524,
+    "T": 8,
+    "g": 8,
+    "counts": {
+      "8": 3663
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 21.947756,
+    "kb_ms": 409.192815,
+    "hybrid_ms": 20.56337,
+    "mean_estimate": 3663,
+    "MARE_percent": 0,
+    "lambda": 1.9536,
+    "routes": [
+      99,
+      1,
+      0
+    ]
+  },
+  {
+    "name": "D16c",
+    "n": 4992,
+    "m": 2496,
+    "dv": 3,
+    "dc": 6,
+    "base": "D",
+    "lift": 16,
+    "kind": "cyclic",
+    "seed": 20261524,
+    "T": 8,
+    "g": 8,
+    "counts": {
+      "8": 57680
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 23.140974,
+    "kb_ms": 91.308327,
+    "hybrid_ms": 5.07425591,
+    "mean_estimate": 57341.65743,
+    "MARE_percent": 7.734107463,
+    "lambda": 30.76266667,
+    "routes": [
+      0,
+      0,
+      100
+    ]
+  },
+  {
+    "name": "validation_B",
+    "n": 20,
+    "m": 15,
+    "dv": 3,
+    "dc": 4,
+    "T": 14,
+    "validation": true,
+    "g": 6,
+    "counts": {
+      "6": 40,
+      "8": 240,
+      "10": 720,
+      "12": 3380,
+      "14": 11480
+    },
+    "canonical_dfs_agrees": true,
+    "exact_ms": 13.066772
+  },
+  {
+    "name": "cactus10_200",
+    "n": 11200,
+    "m": 12599,
+    "T": 22,
+    "validation": true,
+    "expected": 200,
+    "g": 10,
+    "counts": {
+      "10": 200,
+      "12": 200,
+      "14": 200,
+      "16": 200,
+      "18": 200,
+      "20": 200,
+      "22": 200
+    },
+    "exact_ms": 35.698112
+  },
+  {
+    "name": "cactus10_1000",
+    "n": 56000,
+    "m": 62999,
+    "T": 22,
+    "validation": true,
+    "expected": 1000,
+    "g": 10,
+    "counts": {
+      "10": 1000,
+      "12": 1000,
+      "14": 1000,
+      "16": 1000,
+      "18": 1000,
+      "20": 1000,
+      "22": 1000
+    },
+    "exact_ms": 178.875996
+  },
+  {
+    "name": "cactus12_200",
+    "n": 15200,
+    "m": 16799,
+    "T": 26,
+    "validation": true,
+    "expected": 200,
+    "g": 12,
+    "counts": {
+      "12": 200,
+      "14": 200,
+      "16": 200,
+      "18": 200,
+      "20": 200,
+      "22": 200,
+      "24": 200,
+      "26": 200
+    },
+    "exact_ms": 69.386299
+  },
+  {
+    "name": "cactus12_1000",
+    "n": 76000,
+    "m": 83999,
+    "T": 26,
+    "validation": true,
+    "expected": 1000,
+    "g": 12,
+    "counts": {
+      "12": 1000,
+      "14": 1000,
+      "16": 1000,
+      "18": 1000,
+      "20": 1000,
+      "22": 1000,
+      "24": 1000,
+      "26": 1000
+    },
+    "exact_ms": 325.383302
+  },
+  {
+    "name": "A128c",
+    "n": 5376,
+    "m": 2688,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 128,
+    "kind": "cyclic",
+    "seed": 20261836,
+    "T": 8,
+    "comparison": true,
+    "g": 6,
+    "counts": {
+      "6": 20480,
+      "8": 203904
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 58.171846,
+    "kb_ms": 29.762938
+  },
+  {
+    "name": "A128c",
+    "n": 5376,
+    "m": 2688,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 128,
+    "kind": "cyclic",
+    "seed": 20261836,
+    "T": 10,
+    "comparison": true,
+    "g": 6,
+    "counts": {
+      "6": 20480,
+      "8": 203904,
+      "10": 1069056
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 552.370065,
+    "kb_ms": 35.624758
+  },
+  {
+    "name": "A128r",
+    "n": 5376,
+    "m": 2688,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 128,
+    "kind": "random",
+    "seed": 20261836,
+    "T": 8,
+    "comparison": true,
+    "g": 6,
+    "counts": {
+      "6": 176,
+      "8": 1709
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 61.174176,
+    "kb_ms": 438.556224
+  },
+  {
+    "name": "A128r",
+    "n": 5376,
+    "m": 2688,
+    "dv": 3,
+    "dc": 6,
+    "base": "A",
+    "lift": 128,
+    "kind": "random",
+    "seed": 20261836,
+    "T": 10,
+    "comparison": true,
+    "g": 6,
+    "counts": {
+      "6": 176,
+      "8": 1709,
+      "10": 8987
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 602.577871,
+    "kb_ms": 1607.213792
+  },
+  {
+    "name": "D1c",
+    "n": 312,
+    "m": 156,
+    "dv": 3,
+    "dc": 6,
+    "base": "D",
+    "lift": 1,
+    "kind": "cyclic",
+    "seed": 20261509,
+    "T": 10,
+    "comparison": true,
+    "g": 8,
+    "counts": {
+      "8": 3638,
+      "10": 15670
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 13.713346,
+    "kb_ms": 7.455542
+  },
+  {
+    "name": "D1c",
+    "n": 312,
+    "m": 156,
+    "dv": 3,
+    "dc": 6,
+    "base": "D",
+    "lift": 1,
+    "kind": "cyclic",
+    "seed": 20261509,
+    "T": 14,
+    "comparison": true,
+    "g": 8,
+    "counts": {
+      "8": 3638,
+      "10": 15670,
+      "12": 142582,
+      "14": 1111500
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 974.441989,
+    "kb_ms": 12.873398
+  },
+  {
+    "name": "D16r",
+    "n": 4992,
+    "m": 2496,
+    "dv": 3,
+    "dc": 6,
+    "base": "D",
+    "lift": 16,
+    "kind": "random",
+    "seed": 20261524,
+    "T": 10,
+    "comparison": true,
+    "g": 8,
+    "counts": {
+      "8": 3663,
+      "10": 15719
+    },
+    "kb_agrees": true,
+    "nb_agrees": true,
+    "exact_ms": 178.043532,
+    "kb_ms": 1240.070732
+  }
+]
