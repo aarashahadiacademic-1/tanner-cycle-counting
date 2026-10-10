@@ -1,0 +1,43 @@
+\subsection{Interleaved hybrid accuracy and runtime}
+\begin{table}[!ht]
+\centering
+\caption{Preliminary single-processor hybrid results
+($\varepsilon=0.08$, $r=101$, $Q=256$; ten runs per graph).
+Speedup is standalone median exact time divided by mean
+hybrid time. $R$ denotes sampling wins; MARE includes exact returns.}
+\label{tab:hybrid-exp}
+\footnotesize
+\setlength{\tabcolsep}{3.3pt}
+\begin{tabular}{lccrrrrr}
+\hline
+Graph & $(d_v,d_c)$ & $g$ & $n$ & $N_g$ & $R$ & Speedup & MARE (\%)\\
+\hline
+A8c & $(3,6)$ & 6 & $336$ & $1,280$ & 10 & $0.11\times$ & 8.4\\
+A16c & $(3,6)$ & 6 & $672$ & $2,560$ & 10 & $0.37\times$ & 8.4\\
+A32c & $(3,6)$ & 6 & $1,344$ & $5,120$ & 10 & $0.52\times$ & 8.4\\
+A128r & $(3,6)$ & 6 & $5,376$ & $176$ & 0 & $0.05\times$ & 0.0\\
+A128c & $(3,6)$ & 6 & $5,376$ & $20,480$ & 10 & $2.79\times$ & 8.4\\
+A256r & $(3,6)$ & 6 & $10,752$ & $165$ & 0 & $0.06\times$ & 0.0\\
+A256c & $(3,6)$ & 6 & $10,752$ & $40,960$ & 10 & $4.06\times$ & 8.4\\
+B128r & $(3,4)$ & 6 & $2,560$ & $44$ & 0 & $0.05\times$ & 0.0\\
+B128c & $(3,4)$ & 6 & $2,560$ & $4,608$ & 10 & $2.39\times$ & 4.6\\
+C128r & $(4,8)$ & 6 & $11,264$ & $1,590$ & 10 & $0.08\times$ & 8.0\\
+C128c & $(4,8)$ & 6 & $11,264$ & $204,928$ & 10 & $10.80\times$ & 10.1\\
+D16r & $(3,6)$ & 8 & $4,992$ & $3,663$ & 10 & $0.17\times$ & 7.8\\
+D16c & $(3,6)$ & 8 & $4,992$ & $57,680$ & 10 & $2.15\times$ & 7.4\\
+\hline
+\end{tabular}
+\end{table}
+The new measurements use the single-processor interleaving
+of Algorithm~\ref{alg:hybrid}, not the previously benchmarked
+two-thread race. The deterministic routine is resumable through
+an explicit BFS/DFS state machine; exact and randomized routines
+alternate equal fixed budgets of elementary steps.
+Randomized sampling wins on the cycle-rich graphs, giving
+$2.79\times$, $4.06\times$, $10.80\times$, and $2.15\times$
+speedups on A128c, A256c, C128c, and D16c, respectively.
+Sparse A128r, A256r, and B128r return exact counts but suffer
+significant state-machine and scheduling overhead. The
+empirical ten-run MARE may exceed the expected $8\%$ bound.
+These preliminary results establish no uniform wall-clock
+speedup and should be expanded before final publication.
