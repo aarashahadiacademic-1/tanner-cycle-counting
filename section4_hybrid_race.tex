@@ -1,0 +1,49 @@
+\subsection{Parallel hybrid accuracy and runtime}
+
+\begin{table}[!ht]
+\centering
+\caption{Two-thread hybrid racing over 100 runs at $\varepsilon=0.08$
+($r=101$). Speedup is median exact time divided by mean hybrid
+first-winner latency; MARE includes exact returns. $R$ counts randomized wins.}
+\label{tab:hybrid-exp}
+\footnotesize
+\setlength{\tabcolsep}{3.6pt}
+\begin{tabular}{lccrrrrr}
+\hline
+Graph & $(d_v,d_c)$ & $g$ & $n$ & $N_g$ & $R$
+& Speedup & MARE (\%)\\
+\hline
+A8c & $(3,6)$ & 6 & $336$ & $1,280$ & 40 & $0.35\times$ & 3.7\\
+A16c & $(3,6)$ & 6 & $672$ & $2,560$ & 82 & $0.49\times$ & 7.0\\
+A32c & $(3,6)$ & 6 & $1,344$ & $5,120$ & 100 & $1.36\times$ & 7.5\\
+A128r & $(3,6)$ & 6 & $5,376$ & $176$ & 0 & $0.39\times$ & 0.0\\
+A128c & $(3,6)$ & 6 & $5,376$ & $20,480$ & 92 & $3.72\times$ & 7.4\\
+A256r & $(3,6)$ & 6 & $10,752$ & $165$ & 0 & $0.30\times$ & 0.0\\
+A256c & $(3,6)$ & 6 & $10,752$ & $40,960$ & 100 & $4.93\times$ & 8.1\\
+B128r & $(3,4)$ & 6 & $2,560$ & $44$ & 0 & $0.34\times$ & 0.0\\
+B128c & $(3,4)$ & 6 & $2,560$ & $4,608$ & 97 & $1.75\times$ & 6.7\\
+C128r & $(4,8)$ & 6 & $11,264$ & $1,590$ & 0 & $0.80\times$ & 0.0\\
+C128c & $(4,8)$ & 6 & $11,264$ & $204,928$ & 100 & $13.03\times$ & 7.7\\
+D16r & $(3,6)$ & 8 & $4,992$ & $3,663$ & 0 & $0.84\times$ & 0.0\\
+D16c & $(3,6)$ & 8 & $4,992$ & $57,680$ & 100 & $4.41\times$ & 9.4\\
+\hline
+\end{tabular}
+\end{table}
+
+The exact routine and inverse-binomial sampler run concurrently on
+separate C++ threads. The first completion determines the output:
+the exact count or the estimate from the $r$th closure. The losing
+worker receives a cancellation signal; exact search checks it during
+root processing and DFS. Measured timings are first-winner latencies;
+joining the losing thread is excluded. Independent seeds are used in
+100 repetitions. The target $r=101$ follows from the MARE bound at
+$\varepsilon=0.08$; no pilot or sampling cap is used.
+
+Table~\ref{tab:hybrid-exp} illustrates both outcomes. Cycle-rich
+C128c, A256c, and D16c attain speedups of $13.03\times$,
+$4.93\times$, and $4.41\times$, whereas sparse A128r, A256r,
+and B128r always return exact answers but incur concurrency overhead.
+On small instances, thread startup and scheduling can dominate.
+Observed MARE can exceed $\varepsilon$ in a finite batch: the bound
+concerns expected error, not every empirical sample average.
+These measurements do not establish uniform wall-clock dominance.
