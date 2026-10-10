@@ -1,0 +1,743 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{cite}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage{tikz}
+\usepackage{etoolbox}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prb}{\mathbb{P}}
+\newcommand{\cL}{\mathcal{L}}
+
+\begin{document}
+
+\title{Exact Near-Girth Cycle Counting in Tanner Graphs:\\
+Algorithms and Hybrid Estimation}
+
+\author{\IEEEauthorblockN{Arash Ahadi}
+\IEEEauthorblockA{Tehran Institute for Advanced Studies (TeIAS), Khatam University, Iran\\
+\texttt{aarash.ahadi.academic@gmail.com}}}
+
+\maketitle
+
+\begin{abstract}
+Short cycles in Tanner graphs of LDPC codes create dependencies among messages in iterative
+decoding and can degrade decoding performance. Consequently, determining
+their number is important in the analysis and design of LDPC codes. We consider exact and randomized counting of short cycles in a realized Tanner
+graph.
+
+Let a Tanner graph have girth $g\ge6$, order $M$, and maximum degree $\Delta$.
+For every even $g\le T\le M$, we give a deterministic algorithm that
+simultaneously computes $N_g,N_{g+2},\ldots,N_T$ in
+\[
+O\!\left(gM\Delta^{\,T-g/2+1}\right)
+\]
+time.
+
+As a complementary practical component for $(d_v,d_c)$-regular graphs, we
+analyze an unbiased uncapped inverse-sampling estimator for $N_g$ based on
+non-backtracking walks and combine it with the exact routine through an
+independent pilot test and a linear cap. Increasing the stopping target gives
+explicit finite-sample control of both relative error and failure probability.
+Experiments validate exact counts beyond the near-girth range and show
+target- and graph-dependent runtime gains and reversals against our
+Karimi--Banihashemi implementation. Randomized estimation is effective
+when girth cycles are sufficiently abundant.
+\end{abstract}
+
+\begin{IEEEkeywords}
+LDPC codes, Tanner graph, cycle counting, girth, non-backtracking walk, Chernoff's bound, BFS.
+\end{IEEEkeywords}
+
+\section{Introduction}
+Low-density parity-check (LDPC) codes~\cite{gallager1962} are among the most
+widely used families of modern error-correcting codes. Their sparse
+parity-check structure is naturally represented by a Tanner
+graph~\cite{tanner1981},
+a bipartite graph whose variable nodes represent code symbols and whose check
+nodes represent parity constraints. Iterative decoding operates locally on
+this graph, and short cycles cause messages to become correlated after only a
+few iterations, which can degrade decoding performance. Consequently, the
+number and distribution of short cycles are important
+structural parameters in LDPC-code analysis and design
+\cite{halford2006,karimi2013,blake2018,dehghan2019}.
+
+Write $M=|V(G)|$ and let $\Delta$ be the maximum degree;
+$T$ denotes the largest requested cycle length.
+For general bipartite graphs, Halford and Chugg~\cite{halford2006} gave an
+early short-cycle counting algorithm. Karimi and
+Banihashemi~\cite{karimi2013} developed a distributed message-passing method
+that counts all lengths $g,g+2,\ldots,2g-2$ in $O(g|E|^2)$ time; Li, Lin,
+and Abdel-Ghaffar~\cite{li2015} subsequently reduced its computational cost
+by a constant factor. Dehghan and Banihashemi~\cite{dehghan2020} later gave
+a BFS-based method running in $O(M^2\Delta)$ for $g$- and $(g+2)$-cycles
+and $O(M^2\Delta^2)$ for $(g+4)$-cycles, together with hardness results for
+longer lengths. More recently, Chen and He~\cite{chen2025fmpa}
+developed a fast message-passing algorithm (FMPA) to reduce message-processing work; its published bound
+remains quadratic in $|E|$ for fixed $g$ and $T$.
+Our local search complements these approaches.
+For fixed $g$, $\Delta$, and $T$, our bound is linear in $M$, versus the
+published quadratic KB bound; this compares upper bounds, not guaranteed
+runtime behavior. Our bound is most attractive for small degrees and
+short targets, and grows exponentially with $T$.
+Section~\ref{sec:experiments} reports both gains and reversals.
+
+Related work also includes general cycle-counting
+algorithms~\cite{alon1997}, message-passing methods for counting
+and enumerating cycles in bipartite graphs~\cite{yang2017},
+and parallel algorithms specialized to induced
+$6$-cycles~\cite{niu2025}.
+
+Spectral methods use adjacency or directed-edge spectra and degree data
+\cite{blake2018,dehghan2019,dehghan2020directed}.
+QC methods exploit circulant shifts, protographs, or lifting structure
+\cite{fossorier2004,karimi2012qc,gomez2023}.
+Our exact method instead uses local BFS and residual-path enumeration
+on the realized graph, allowing irregular graphs without these structures;
+our randomized analysis assumes $(d_v,d_c)$-regularity.
+
+Since $4$-cycles are undesirable in iterative LDPC
+decoding, we assume girth $g\ge6$ throughout.
+
+In Section~\ref{sec:exact}, we count all cycles
+of every even length $t$ satisfying
+\begin{equation}\label{eq:range}
+ g\le t\le M.
+\end{equation}
+More strongly, for any even $T$ in this range, all counts
+$N_g,N_{g+2},\ldots,N_T$ are obtained simultaneously in
+\begin{equation}\label{eq:maincomplexity}
+ O\!\left(gM\Delta^{\,T-g/2+1}\right),
+\end{equation}
+The key structural observation is that, for each chosen root, the girth
+condition forces the two initial segments of every cycle through that
+root to follow unique paths in its local BFS tree. These tree paths
+provide a fixed part of the cycle, reducing the search to a residual
+path connecting their endpoints. We exploit this decomposition to count
+all requested lengths simultaneously, including lengths beyond the
+near-girth range. The analysis accounts for both residual-path
+enumeration and the disjointness checks needed to ensure that each
+completed cycle is simple, yielding the stated complexity bound.
+
+When girth cycles are sufficiently abundant, sampling can provide
+an efficient alternative to exact counting. In Section~\ref{sec:random}, the closure probability of sampled length-$g$
+non-backtracking walks determines $N_g$: each closure traverses a girth cycle.
+Non-backtracking walks are established tools in spectral
+theory~\cite{bass1992};
+we use this girth-specific counting identity in a hybrid estimator.
+
+A short pilot then decides whether closures are too rare for efficient
+relative sampling. Closure-sparse instances are routed to the exact routine,
+whereas cycle-rich instances use fresh independent inverse samples. We prove explicit finite-sample
+routing bounds and exponentially decaying relative-error bounds in the
+stopping target.
+
+\section{Exact Cycle Counting}\label{sec:exact}
+Let $G=(U\cup W,E)$ be a simple bipartite graph of known girth $g\ge6$
+and maximum degree $\Delta$. Girth computation, if needed, is preprocessing.
+Write $\cL_i(v)=\{x:\dist(v,x)=i\}$. The following elementary lemmas expose
+the tree structure used by the exact algorithm.
+
+\begin{lemma}[Tree ball]\label{lem:tree}
+For every $v$, the subgraph induced by vertices at distance at most $g/2-1$
+from $v$ is a tree. Thus each $x\in\cL_{g/2-1}(v)$ has a unique
+path from $v$ to $x$, denoted by $P_v(x)$.
+\end{lemma}
+\begin{proof}
+The BFS tree spans the ball, so any cycle in the induced ball contains a
+non-tree edge $xy$. This edge together with the tree paths from $v$ to $x$
+and $y$ contains a cycle of length at most
+\[
+\dist(v,x)+\dist(v,y)+1\le
+\left(\frac{g}{2}-1\right)+\left(\frac{g}{2}-1\right)+1
+=g-1,
+\]
+contradicting the assumption that the graph has girth $g$.
+\end{proof}
+
+Lemma~\ref{lem:tree} yields the saving in
+\eqref{eq:maincomplexity}: two tree arms are fixed,
+leaving only the residual path to search.
+
+For $x\in\cL_{g/2-1}(v)$, let $b_v(x)$ be the first vertex after $v$ on
+$P_v(x)$.  Fix any even $t$ with $g\le t\le M$ and set
+\begin{equation}\label{eq:rdef}
+ r=t-g+2.
+\end{equation}
+Then $r\ge2$; no upper bound on $r$ in terms of $g$ is assumed.
+
+\begin{lemma}[Rooted decomposition]\label{lem:decomp}
+Let $C$ be a $t$-cycle and $v\in C$.  Moving $g/2-1$ edges from $v$ in the
+two directions on $C$ reaches two vertices in $\cL_{g/2-1}(v)$, called $x$ and $y$, in different
+branches.  The selected arcs are $P_v(x)$ and $P_v(y)$, and the remaining
+$x$--$y$ arc has length $r$.
+\end{lemma}
+\begin{proof}
+Each of the two selected arcs from $v$ to $x$ and $y$ has length $g/2-1$.
+If, say, $x$ had a shorter $v$--$x$ path, its union with the selected arc
+would contain a cycle of length at most $g-3$, contradicting the girth
+assumption. Thus $x,y\in\cL_{g/2-1}(v)$. Moreover, a second shortest path
+to either endpoint, together with the corresponding selected arc, would
+contain a cycle of length at most $2\left(g/2-1\right)=g-2$.
+Hence the selected arcs are precisely the unique BFS-tree paths
+$P_v(x)$ and $P_v(y)$.
+They leave $v$ along the two different cycle edges, so they lie in different branches. Here, each branch of the BFS tree rooted at $v$ is the subtree rooted at one
+of the children of $v$.
+The total length of $P_v(x)$ and $P_v(y)$ is $g-2$, leaving exactly
+$r=t-(g-2)$ edges.
+\end{proof}
+
+
+
+\begin{algorithm}[t]
+\caption{Exact counting of $t$-cycles}\label{alg:exact}
+\footnotesize
+\begin{algorithmic}[1]
+\Require Tanner graph $G=(U\cup W,E)$ with girth $g\ge6$; even
+$t$ satisfying $g\le t\le M$
+\State $r\gets t-g+2$, $C_t\gets0$; fix any total order $\prec$ on $V(G)$ to break symmetry
+\ForAll{$v\in U$}
+  \State build the BFS tree to depth $g/2-1$
+  \ForAll{$x\in\cL_{g/2-1}(v)$}
+    \State enumerate length-$r$ non-backtracking walks $Q$ from $x$ whose internal vertices avoid $P_v(x)$
+    \Statex \hspace{\algorithmicindent} using DFS that marks the current path and rejects repeated vertices
+    \ForAll{such generated paths $Q$}
+      \State let $y$ be the endpoint of $Q$
+      \If{$y\in\cL_{g/2-1}(v)$, $b_v(x)\ne b_v(y)$,
+          $x\prec y$, and $Q$ internally avoids $P_v(y)$}
+        \State $C_t\gets C_t+1$
+      \EndIf
+    \EndFor
+  \EndFor
+\EndFor
+\State \Return $N_t=2C_t/t$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{theorem}\label{thm:exact}
+Let $G$ be a Tanner graph with girth $g\ge6$ and maximum degree $\Delta$, and let
+$g\le T\le M$ be any even integer. Then all cycle counts $N_g,N_{g+2},\ldots,N_T$
+can be computed exactly in $O\!\left(gM\Delta^{\,T-g/2+1}\right)$
+time. 
+\end{theorem}
+\begin{proof}
+Fix an even $t\in\{g,g+2,\ldots,T\}$ and put $r=t-g+2$. By
+Lemmas~\ref{lem:tree} and~\ref{lem:decomp}, every $t$-cycle through a root
+$v\in U$ is split uniquely into two forced BFS-tree arms
+$P_v(x),P_v(y)$, each of length $g/2-1$, together with the remaining
+$x$--$y$ path of length $r$.
+
+Conversely, every residual non-backtracking walk accepted by Algorithm~\ref{alg:exact}
+is simple because in line~5 of Algorithm~\ref{alg:exact}, the DFS never extends its current path to a vertex
+already marked on that path. Since its internal vertices avoid both tree
+arms, and the two arms intersect only at $v$, their union is a simple
+$t$-cycle. This argument applies to every $r$, including $r\ge g$.
+
+For each $x$, mark $V(P_v(x))\setminus\{x\}$ in a separate forbidden
+array in $O(g)$ time. These marks remain fixed during the search from
+$x$. A second array marks the vertices on the current DFS path,
+initially only $x$. DFS explores each neighbor that is neither
+forbidden nor already on the current path, marking it before recursion
+and unmarking it on return. Each neighbor check and mark update takes
+$O(1)$ time. At depth $r$, DFS tests the endpoint and acceptance
+conditions. Thus every admissible simple residual path is generated
+exactly once from $x$. To check that $Q$ internally avoids $P_v(y)$
+(line~8 of Algorithm~\ref{alg:exact}), scan
+$V(P_v(y))\setminus\{y\}$ against the current-path marks, rejecting
+the candidate if any scanned vertex is marked. This ensures that $Q$
+meets the second tree arm only at $y$ and costs $O(g)$, as accounted
+for below. These acceptance tests are performed before backtracking,
+while all vertices of $Q$ are still marked.
+
+Distinct accepted residual paths for the same $\{x,y\}$ yield distinct
+cycles and must all be counted. 
+Cycles formed solely by the union of residual $x$--$y$ paths are not
+counted at this root, because every residual path avoids $v$, whereas each
+counted cycle includes $v$ through the two tree arms.
+
+The unique rooted decomposition and $x\prec y$ give a bijection between
+accepted residual paths and $t$-cycles through $v$; the residual connection
+need not be unique.
+
+Every $t$-cycle contains exactly $t/2$ vertices of $U$, each of which
+is used as a root. Thus the raw counter satisfies
+\[
+C_t=\frac{t}{2}N_t,
+\]
+and returning $2C_t/t$ yields the exact cycle count $N_t$.
+
+To count all lengths through $T$ simultaneously, for each root $v$ and each
+$x\in\cL_{g/2-1}(v)$ perform one non-backtracking search to maximum depth
+$R=T-g+2$, forbidding $V(P_v(x))\setminus\{x\}$ and rejecting repeated
+vertices by the same current-path marking. Whenever the current path
+reaches depth $r=t-g+2$ and ends at a boundary vertex $y$ in a different
+branch, with $x\prec y$, check that its internal vertices avoid $P_v(y)$
+and update the counter for length $t$ if the check succeeds. Reaching a boundary
+vertex does not stop the search: longer simple extensions may contribute
+to larger target lengths. The cycle--path correspondence above applies
+at every admissible depth.
+
+\underline{Complexity:}
+For each root $v\in U$, there are $O(\Delta^{g/2-1})$ choices of $x$.
+From each $x$, DFS generates $O(\Delta^{T-g+2})$ partial paths.
+Neighbor checks occur only below the maximum search depth;
+their total number is also $O(\Delta^{T-g+2})$ per $x$.
+The endpoint $y$ is determined by each generated path, so all possible
+endpoints are already included in this bound. Checking whether a
+candidate path avoids the second tree arm $P_v(y)$ internally costs
+$O(g)$. Since there are $n=|U|$ roots, the total cost is
+\[
+O\!\left(ng\Delta^{g/2-1}\Delta^{T-g+2}\right)
+=
+O\!\left(ng\Delta^{T-g/2+1}\right).
+\]
+Since $n\le M$, this proves the stated bound.
+
+Allocate the BFS and marking arrays once in $O(M)$ time.
+Do not clear all $M$ entries for each new root. Instead, record which
+entries are used and clear only those entries before reusing the arrays.
+The number of entries cleared is at most the number used during the
+search, so cleanup is included in the stated complexity bound.
+We count each arithmetic operation on a cycle counter as one operation.
+\end{proof}
+
+\section{Accuracy-Controlled Hybrid $g$-Cycle Counting}
+\label{sec:random}
+
+When girth cycles are sufficiently abundant, sampling
+can provide an efficient alternative to exact counting; see inequality (\ref{eq:rich-regime}).
+When such cycles are sparse, exact counting may be preferable.
+
+We combine the exact routine of Section~\ref{sec:exact} with inverse
+sampling. The two procedures
+are interleaved on one processor, receiving equal budgets of
+elementary operations. The first to finish supplies the answer.
+
+Assume that $G$ is $(d_v,d_c)$-regular, with $n=|U|$ variable
+nodes and girth $g\ge6$. 
+Selecting a non-backtracking walk means that, at each step, we choose a neighbor of the vertex selected in the previous step, excluding the vertex selected two steps earlier. In other words, no edge may be traversed in the reverse direction immediately after it has been traversed.
+
+The number of length-$g$ non-backtracking
+(non-backtracking) walks from each variable node is
+\begin{equation}\label{eq:B}
+ B=d_v(d_v-1)^{g/2-1}(d_c-1)^{g/2}.
+\end{equation}
+A sampling trial chooses a variable root uniformly and then a
+uniform non-backtracking walk of length $g$ from that root. By the girth
+assumption, a closed such walk traverses a simple $g$-cycle.
+Each $g$-cycle contributes two orientations from each of its
+$g/2$ variable vertices. Thus the closure probability is
+\begin{equation}\label{eq:closure-prob}
+ p=\frac{gN_g}{nB}.
+\end{equation}
+
+\subsection{Inverse sampling and accuracy selection}
+For $N_g>0$, let $S_r$ be the sample on which the $r$th
+closure occurs, $r\ge2$. Then
+$S_r\sim\mathrm{NegBin}(r,p)$ and $\mathbb E[S_r]=r/p$.
+The standard unbiased inverse-sampling estimator
+of $p$ is $(r-1)/(S_r-1)$ for $r\ge2$
+~\cite{mendo2009}. Using \eqref{eq:closure-prob},
+our estimator of $N_g$ is
+\begin{equation}\label{eq:inverse-est}
+ \widehat N_g=\frac{nB}{g}\frac{r-1}{S_r-1}.
+\end{equation}
+It is unbiased without stopping by the exact procedure.
+More importantly, the normalized mean absolute-error bound
+of~\cite{mendo2009} implies
+\begin{equation}\label{eq:mendo-bound}
+ \mathbb E\!\left[\frac{|\widehat N_g-N_g|}{N_g}\right]
+ \le a_r:=
+ \frac{2(r-1)^{r-1}e^{-(r-1)}}{(r-1)!}.
+\end{equation}
+Given a requested MARE tolerance $\varepsilon>0$, choose
+\begin{equation}\label{eq:r-eps}
+ r=r(\varepsilon)=\min\{j\ge2:a_j\le\varepsilon\}.
+\end{equation}
+The target is independent of $N_g$; indeed
+$a_r\sim\sqrt{2/(\pi r)}$, so $r=O(\varepsilon^{-2})$
+as $\varepsilon\rightarrow0$.
+
+For standard accuracy tolerances, the corresponding
+values of $r(\varepsilon)$ can be precomputed and
+retrieved in constant time. For arbitrary tolerances,
+$r(\varepsilon)$ can be obtained in $O(r)$ numerical
+operations using the recurrence
+$a_{j+1}=a_j e^{-1}(j/(j-1))^{j-1}$, starting
+from $a_2=2/e$.
+\subsection{Single-processor interleaving}
+Both procedures are made resumable. The exact routine stores
+its BFS and DFS states, root index, path marks, and counters;
+the sampler stores its current (possibly incomplete) walk,
+trial count $S$, closure count $A$, and random-generator state.
+Fix any constant quantum $Q\ge1$. The scheduler gives at most
+$Q$ \emph{elementary operations} to each procedure in turn,
+not one full iteration of each: a single exact-search
+iteration and a sampling trial need not have equal cost.
+A procedure may yield in the middle of a search or walk and
+resume from that point. No physical clock or second core is
+required.
+
+\begin{algorithm}[t]
+\caption{Interleaved hybrid $g$-cycle counting}
+\label{alg:hybrid}
+\footnotesize
+\begin{algorithmic}[1]
+\Require $(d_v,d_c)$-regular Tanner graph $G$ with $n$ variable vertices and girth
+$g\ge6$, tolerance $\varepsilon>0$
+\State Fix any constant $Q\ge1$
+\State Compute $B$ from \eqref{eq:B}
+\State $r\gets r(\varepsilon)$ from \eqref{eq:r-eps}
+\State Initialize resumable $\mathsf{ExactGirth}(G)$
+\State Initialize sampler with $S\gets0$, $A\gets0$
+\While{true}
+  \State Advance $\mathsf{ExactGirth}$ by at most $Q$ operations
+  \If{exact counting finishes}
+    \State \Return $N_g$
+  \EndIf
+  \State Advance sampling by at most $Q$ operations
+  \State Update $S$ for completed walks and $C$ for closures
+  \If{$C\ge r$}
+ \State \Return $\frac{nB}{g}\frac{C-1}{S-1}$
+  \EndIf
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+\begin{theorem}\label{thm:hybrid}
+For $N_g>0$, Algorithm~\ref{alg:hybrid} returns
+$\widetilde N_g$ satisfying
+\[
+ \mathbb E\!\left[
+  \frac{|\widetilde N_g-N_g|}{N_g}\right]
+ \le\varepsilon.
+\]
+For $N_g=0$ it returns zero exactly. Under unit-cost
+arithmetic and $O(1)$ amortized suspension and resumption,
+its work after initialization is
+\[
+ O\!\left(\min\{W_E,W_R\}+Q\right)
+ =O(gn\omega+Q),
+\]
+where $W_E$ is the work of exact girth counting,
+$W_R$ is the work of uncapped inverse sampling to its
+$r$th closure (infinite when $N_g<r$), and
+$\omega$ is the regular-degree factor in
+Section~\ref{sec:exact} for $T=g$.
+\end{theorem}
+\begin{proof}
+Couple the hybrid sampler to an infinite sequence of
+independent trials. If sampling wins, the output equals
+\eqref{eq:inverse-est}; otherwise it is the exact count.
+Therefore its absolute error is no larger, sample by
+sample, than that of the uncapped estimator.
+Taking expectations and applying \eqref{eq:mendo-bound}
+proves the MARE claim. If $N_g<r$, the exact routine finishes first.
+
+With indexed adjacency lists, a completed non-backtracking trial takes
+$O(g)$ elementary operations. Because each active routine
+receives the same constant quantum $Q$ per round, the
+first completion occurs within
+$2\min\{W_E,W_R\}+O(Q)$ elementary operations, up to
+constant-amortized scheduling overhead. By the regular-degree
+bound of Section~\ref{sec:exact},
+$W_E=O(gn\omega)$; the work bound follows.
+\end{proof}
+
+\noindent\textbf{When sampling is advantageous.}
+Uncapped sampling needs an expected $r/p$ trials,
+each costing $\Theta(g)$ elementary operations. Its expected
+work, apart from initialization, is therefore
+\begin{equation}\label{eq:random-work}
+ \mathbb E[W_R]
+ =\Theta\!\left(\frac{gr}{p}\right)
+ =\Theta\!\left(\frac{rnB}{N_g}\right).
+\end{equation}
+If sampling wins, the exact routine imposes an upper cutoff
+on $S_r$; hence its conditional expected number of trials
+is at most $r/p$. The expected total work of the race obeys
+\begin{equation}\label{eq:hybrid-expected-work}
+ \mathbb E[W_{\rm hybrid}]
+ =O\!\left(
+ \min\left\{gn\omega,\frac{rnB}{N_g}\right\}+Q
+ \right),\qquad N_g>0.
+\end{equation}
+Thus the \emph{displayed bounds} favor sampling when
+\begin{equation}\label{eq:rich-regime}
+ N_g\gg \frac{rB}{g\omega}
+ =\Theta\!\left(\frac{B}{\varepsilon^2 g\omega}\right).
+\end{equation}
+and favor exact counting when $N_g$ is small compared with
+this scale. Decreasing $\varepsilon$ increases
+$r=\Theta(\varepsilon^{-2})$, shifting the comparison
+toward exact counting. For fixed degrees, girth, and $\varepsilon$,
+$\omega$, $B$, and $r$ are constants; if
+$N_g=\Theta(n)$, expected sampling work is $O(1)$
+apart from input setup, versus the $O(n)$ exact bound.
+If $N_g=O(1)$, the sampling-work expression is
+$\Theta(n)$, and exact counting can be preferable.
+These comparisons concern asymptotic work bounds, not
+finite-instance wall-clock speedups or a lower bound on
+the exact procedure. The MARE guarantee is an expectation,
+not a per-run error guarantee.
+
+\section{Experimental Evaluation}\label{sec:experiments}
+Single-threaded C++17 measurements use \texttt{g++ 14.2 -O3} on an
+AMD EPYC 9V74 shared container. Exact/KB times are medians of seven runs;
+hybrid times and outputs average 100 runs, including exact returns.
+Graph construction and verification are untimed. Source code, graph generators, seeds, edge lists, and full results
+for the comparison are available at
+\url{https://github.com/aarashahadiacademic-1/tanner-cycle-counting}.
+
+\subsection{Benchmark Construction for Comparison with KB
+\cite{karimi2013}}
+The graphs in Table~\ref{tab:comparison-exp} are synthetic sparse parity-check
+matrices, not standardized codes or decoding benchmarks.
+We favor small degrees to limit the branching of our local search.
+
+The labels in the first column of Table~\ref{tab:comparison-exp}
+identify the graph construction and, where applicable, its lift.
+Bases A--C use point--line incidence $y=sx+b$ over $\mathbb F_Q$,
+the finite field with $Q$ elements, with
+$0\le x \le d_c-1$ and $0\le s\le d_v-1$.
+Their parameters $(Q,d_v,d_c)$ are $(7,3,6)$, $(5,3,4)$, and
+$(11,4,8)$, respectively. This construction gives the stated degrees
+and excludes $4$-cycles.
+Base D is obtained from the symplectic generalized quadrangle over
+$\mathbb F_5$ by splitting each degree-six point into two degree-three
+variables. It has 312 variables, 156 checks, degree pair $(3,6)$,
+and girth eight.
+
+For A--D, labels specify the base, lift size, and cyclic ($c$) or
+random ($r$) lift.
+R1200 uses random socket pairing followed by
+degree-preserving switches to remove $4$-cycles.
+P1200 and P1600 use degree-constrained progressive edge growth.
+The numbers in these R/P labels denote the number of variables.
+
+Q410 and Q412 are $(3,4)$ quasi-cyclic graphs with girths 10 and 12
+and circulant sizes 10,112 and 9,088, respectively.
+They use the first four columns of Zhang and Wang's exponent
+matrix~\cite{zhang2010}, with modified circulant shifts.
+
+Construction details, exponent matrices, and fixed seeds are provided
+in the repository linked above. Every realized graph was checked for
+simplicity, connectivity, degrees, and girth.
+
+Our KB implementation follows Karimi and
+Banihashemi~\cite{karimi2013}, rather than their
+software, using exponent-vector messages,
+node sums, reverse subtraction, nonzero-message
+processing, root retransmission suppression,
+and earlier-root deactivation.
+Table~\ref{tab:comparison-exp} compares the three methods on $N_g$.
+Separate longer-target comparisons in the repository show complementary
+performance: KB can be faster on some longer cycle-rich targets.
+These implementation-dependent results on synthetic graphs
+do not establish superiority across LDPC families.
+
+\subsection{Hybrid accuracy and runtime}
+Table~\ref{tab:comparison-exp} compares all three algorithms on the
+same target $N_g$, using $\varepsilon=0.08$, $r=101$, and a fixed
+interleaving quantum $Q=256$. Here $n$ is the number of variable
+nodes and $N_g$ is the exact girth-cycle count.
+KB and Exact times are medians of seven runs, while Hybrid times
+and outputs average 100 runs. Hybrid time includes both interleaved
+procedures and scheduling overhead. MARE is the mean of
+$100|\widetilde N_g-N_g|/N_g$ over all 100 outputs,
+including exact returns.
+
+\begin{table*}[t]
+\centering
+\caption{Same-target comparison for $N_g$; running times in milliseconds.
+KB and Exact are medians of seven runs; Hybrid and MARE average 100 runs.
+MARE is mean absolute relative error in percent.}
+\label{tab:comparison-exp}
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lccrrrrrr}
+\hline
+Graph & $(d_v,d_c)$ & $g$ & $n$ & $N_g$
+& KB & Exact & Hybrid & MARE (\%)\\
+\hline
+A16c & $(3,6)$ & 6 & $672$ & $2,560$ & 1.507 & 0.497 & 0.799 & 7.7\\
+A128r & $(3,6)$ & 6 & $5,376$ & $176$ & 58.701 & 6.215 & 104.750 & 0.0\\
+A128c & $(3,6)$ & 6 & $5,376$ & $20,480$ & 14.842 & 5.699 & 1.382 & 8.8\\
+B128c & $(3,4)$ & 6 & $2,560$ & $4,608$ & 3.068 & 1.095 & 0.454 & 7.6\\
+C128c & $(4,8)$ & 6 & $11,264$ & $204,928$ & 112.565 & 44.423 & 3.196 & 7.6\\
+D16c & $(3,6)$ & 8 & $4,992$ & $57,680$ & 75.800 & 18.504 & 4.548 & 6.9\\
+R1200 & $(4,8)$ & 6 & $1,200$ & $1,564$ & 47.418 & 4.171 & 24.667 & 6.5\\
+P1200 & $(3,6)$ & 8 & $1,200$ & $65$ & 44.640 & 4.211 & 44.721 & 0.0\\
+P1600 & $(3,4)$ & 10 & $1,600$ & $11$ & 70.511 & 5.195 & 80.908 & 0.0\\
+Q410 & $(3,4)$ & 10 & $40,448$ & $40,448$ & 1125.038 & 128.667 & 90.153 & 7.5\\
+Q412 & $(3,4)$ & 12 & $36,352$ & $308,992$ & 2971.170 & 292.054 & 62.125 & 7.6\\
+\hline
+\end{tabular}
+\end{table*}
+
+Zero MARE indicates that exact counting finished first in every run,
+as on A128r, P1200, and P1600. Cycle-rich instances can benefit
+from sampling, whereas sparse ones may incur interleaving overhead
+before exact termination. On R1200, sampling wins all 100 runs,
+but the hybrid is slower than standalone exact counting because
+state-machine steps have unequal practical costs. At girths 10
+and 12, Q410 and Q412 use inverse sampling in every run and
+obtain lower hybrid latency than either exact method. These
+implementation-dependent results do not establish superiority
+across LDPC families.
+
+The observed MARE values around $8\%$ are consistent with a
+normal approximation to uncapped inverse sampling. Since $S_r$
+has mean $r/p$ and variance $r(1-p)/p^2$, for large $r$ the
+relative estimation error is approximately normal with variance
+$(1-p)/r$. Hence the expected absolute relative error is
+approximately $\sqrt{2(1-p)/(\pi r)}$, or about $7.94\%$ for
+$r=101$ and small $p$. This is an asymptotic approximation for
+uncapped inverse sampling, not an exact hybrid guarantee;
+exact termination can reduce the overall MARE. The guarantee
+in Theorem~\ref{thm:hybrid} concerns expected error, so a
+100-run empirical MARE may exceed $\varepsilon$.
+
+\section*{AI Statement}
+OpenAI ChatGPT (GPT-5.6) assisted with literature discovery, language editing,
+and checking mathematical exposition, proofs, and experimental scripts.  The author checked the sources, claims, computations, and final
+manuscript and assumes full responsibility for its content.
+
+\begin{thebibliography}{99}
+
+\bibitem{gallager1962}
+R. G. Gallager, ``Low-density parity-check codes,''
+\emph{IRE Trans. Inf. Theory}, vol. 8, no. 1,
+pp. 21--28, 1962.
+
+\bibitem{tanner1981}
+R. M. Tanner, ``A recursive approach to low complexity codes,''
+\emph{IEEE Trans. Inf. Theory}, vol. 27, no. 5,
+pp. 533--547, 1981.
+
+\bibitem{halford2006}
+T. R. Halford and K. M. Chugg,
+``An algorithm for counting short cycles in bipartite graphs,''
+\emph{IEEE Trans. Inf. Theory}, vol. 52, no. 1,
+pp. 287--292, 2006.
+
+\bibitem{karimi2013}
+M. Karimi and A. H. Banihashemi,
+``Message-passing algorithms for counting short cycles in a graph,''
+\emph{IEEE Trans. Commun.}, vol. 61, no. 2,
+pp. 485--495, 2013.
+
+\bibitem{blake2018}
+I. F. Blake and S. Lin,
+``On short cycle enumeration in biregular bipartite graphs,''
+\emph{IEEE Trans. Inf. Theory}, vol. 64, no. 10,
+pp. 6526--6535, 2018.
+
+\bibitem{dehghan2019}
+A. Dehghan and A. H. Banihashemi,
+``On computing the multiplicity of cycles in bipartite graphs
+using the degree distribution and the spectrum of the graph,''
+\emph{IEEE Trans. Inf. Theory}, vol. 65, no. 6,
+pp. 3778--3789, 2019.
+
+\bibitem{li2015}
+J. Li, S. Lin, and K. A. S. Abdel-Ghaffar,
+``Improved message-passing algorithm for counting short cycles
+in bipartite graphs,''
+in \emph{Proc. IEEE Int. Symp. Inf. Theory (ISIT)},
+2015, pp. 416--420.
+
+\bibitem{dehghan2020}
+A. Dehghan and A. H. Banihashemi,
+``Counting short cycles in bipartite graphs:
+A fast technique/algorithm and a hardness result,''
+\emph{IEEE Trans. Commun.}, vol. 68, no. 3,
+pp. 1378--1390, 2020.
+
+\bibitem{chen2025fmpa}
+H. Chen and X. He,
+``A fast messages-passing algorithm for counting short cycles
+in bipartite graphs,''
+in \emph{Proc. IEEE/CIC Int. Conf. Commun. China Workshops
+(ICCC Workshops)}, 2025, pp. 1--6,
+doi: 10.1109/ICCCWorkshops67136.2025.11148122.
+
+\bibitem{alon1997}
+N. Alon, R. Yuster, and U. Zwick,
+``Finding and counting given length cycles,''
+\emph{Algorithmica}, vol. 17, no. 3,
+pp. 209--223, 1997.
+
+\bibitem{yang2017}
+K. Yang, B. Zhang, Y. Zhan, and D. Guo,
+``Design and analysis of efficient algorithm for counting
+and enumerating cycles in LDPC codes,''
+in \emph{Information Technology and Intelligent Transportation Systems},
+Advances in Intelligent Systems and Computing, vol. 454.
+Springer, 2017, pp. 131--137,
+doi: 10.1007/978-3-319-38789-5\_23.
+
+\bibitem{niu2025}
+J. Niu, J. Zola, and A. E. Sar{\i}y\"uce,
+``Fast counting and utilizing induced 6-cycles in bipartite networks,''
+\emph{IEEE Trans. Knowl. Data Eng.}, vol. 37, no. 6,
+pp. 3386--3398, 2025,
+doi: 10.1109/TKDE.2025.3546516.
+
+\bibitem{dehghan2020directed}
+A. Dehghan and A. H. Banihashemi,
+``On computing the number of short cycles in bipartite graphs
+using the spectrum of the directed edge matrix,''
+\emph{IEEE Trans. Inf. Theory}, vol. 66, no. 10,
+pp. 6037--6047, 2020.
+
+\bibitem{fossorier2004}
+M. P. C. Fossorier,
+``Quasicyclic low-density parity-check codes
+from circulant permutation matrices,''
+\emph{IEEE Trans. Inf. Theory}, vol. 50, no. 8,
+pp. 1788--1793, 2004.
+
+\bibitem{karimi2012qc}
+M. Karimi and A. H. Banihashemi,
+``Counting short cycles of quasi cyclic protograph LDPC codes,''
+\emph{IEEE Commun. Lett.}, vol. 16, no. 3,
+pp. 400--403, 2012.
+
+\bibitem{gomez2023}
+A. G\'omez-Fonseca, R. Smarandache, and D. G. M. Mitchell,
+``An efficient strategy to count cycles in the Tanner graph
+of quasi-cyclic LDPC codes,''
+\emph{IEEE J. Sel. Areas Inf. Theory}, vol. 4,
+pp. 499--513, 2023.
+
+\bibitem{bass1992}
+H. Bass,
+``The Ihara--Selberg zeta function of a tree lattice,''
+\emph{Int. J. Math.}, vol. 3, no. 6,
+pp. 717--797, 1992.
+
+\bibitem{mendo2009}
+L. Mendo,
+``Estimation of a probability with guaranteed normalized
+mean absolute error,''
+\emph{IEEE Commun. Lett.}, vol. 13, no. 11,
+pp. 817--819, 2009.
+
+\bibitem{zhang2010}
+G. Zhang and X. Wang,
+``Girth-12 quasi-cyclic LDPC codes with consecutive lengths,''
+arXiv:1001.3916, 2010.
+
+\end{thebibliography}
+
+
+\end{document}
