@@ -1,0 +1,116 @@
+\section{Experimental Evaluation}\label{sec:experiments}
+Single-threaded C++17 measurements use \texttt{g++ 14.2 -O3} on an
+AMD EPYC 9V74 shared container. Exact/KB times are medians of seven runs;
+hybrid times and outputs average 100 runs, including exact returns.
+Graph construction and verification are untimed. Source code, graph generators, seeds, edge lists, and full results
+for the comparison are available at
+\url{https://github.com/aarashahadiacademic-1/tanner-cycle-counting}.
+
+\subsection{Benchmark Construction for Comparison with KB
+\cite{karimi2013}}
+The graphs in Table~\ref{tab:comparison-exp} are synthetic sparse parity-check
+matrices, not standardized codes or decoding benchmarks.
+We favor small degrees to limit the branching of our local search.
+
+The labels in the first column of Table~\ref{tab:comparison-exp}
+identify the graph construction and, where applicable, its lift.
+Bases A--C use point--line incidence $y=sx+b$ over $\mathbb F_Q$,
+the finite field with $Q$ elements, with
+$0\le x \le d_c-1$ and $0\le s\le d_v-1$.
+Their parameters $(Q,d_v,d_c)$ are $(7,3,6)$, $(5,3,4)$, and
+$(11,4,8)$, respectively. This construction gives the stated degrees
+and excludes $4$-cycles.
+Base D is obtained from the symplectic generalized quadrangle over
+$\mathbb F_5$ by splitting each degree-six point into two degree-three
+variables. It has 312 variables, 156 checks, degree pair $(3,6)$,
+and girth eight.
+
+For A--D, labels specify the base, lift size, and cyclic ($c$) or
+random ($r$) lift.
+R1200 uses random socket pairing followed by
+degree-preserving switches to remove $4$-cycles.
+P1200 and P1600 use degree-constrained progressive edge growth.
+The numbers in these R/P labels denote the number of variables.
+
+Q410 and Q412 are $(3,4)$ quasi-cyclic graphs with girths 10 and 12
+and circulant sizes 10,112 and 9,088, respectively.
+They use the first four columns of Zhang and Wang's exponent
+matrix~\cite{zhang2010}, with modified circulant shifts.
+
+Construction details, exponent matrices, and fixed seeds are provided
+in the repository linked above. Every realized graph was checked for
+simplicity, connectivity, degrees, and girth.
+
+Our KB implementation follows Karimi and
+Banihashemi~\cite{karimi2013}, rather than their
+software, using exponent-vector messages,
+node sums, reverse subtraction, nonzero-message
+processing, root retransmission suppression,
+and earlier-root deactivation.
+Table~\ref{tab:comparison-exp} compares the three methods on $N_g$.
+Separate longer-target comparisons in the repository show complementary
+performance: KB can be faster on some longer cycle-rich targets.
+These implementation-dependent results on synthetic graphs
+do not establish superiority across LDPC families.
+
+\subsection{Hybrid accuracy and runtime}
+Table~\ref{tab:comparison-exp} compares all three algorithms on the
+same target $N_g$, using $\varepsilon=0.08$, $r=101$, and a fixed
+interleaving quantum $Q=256$. Here $n$ is the number of variable
+nodes and $N_g$ is the exact girth-cycle count.
+KB and Exact times are medians of seven runs, while Hybrid times
+and outputs average 100 runs. Hybrid time includes both interleaved
+procedures and scheduling overhead. MARE is the mean of
+$100|\widetilde N_g-N_g|/N_g$ over all 100 outputs,
+including exact returns.
+
+\begin{table*}[t]
+\centering
+\caption{Same-target comparison for $N_g$; running times in milliseconds.
+KB and Exact are medians of seven runs; Hybrid and MARE average 100 runs.
+MARE is mean absolute relative error in percent.}
+\label{tab:comparison-exp}
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lccrrrrrr}
+\hline
+Graph & $(d_v,d_c)$ & $g$ & $n$ & $N_g$
+& KB & Exact & Hybrid & MARE (\%)\\
+\hline
+A16c & $(3,6)$ & 6 & $672$ & $2,560$ & 1.507 & 0.497 & 0.799 & 7.7\\
+A128r & $(3,6)$ & 6 & $5,376$ & $176$ & 58.701 & 6.215 & 104.750 & 0.0\\
+A128c & $(3,6)$ & 6 & $5,376$ & $20,480$ & 14.842 & 5.699 & 1.382 & 8.8\\
+B128c & $(3,4)$ & 6 & $2,560$ & $4,608$ & 3.068 & 1.095 & 0.454 & 7.6\\
+C128c & $(4,8)$ & 6 & $11,264$ & $204,928$ & 112.565 & 44.423 & 3.196 & 7.6\\
+D16c & $(3,6)$ & 8 & $4,992$ & $57,680$ & 75.800 & 18.504 & 4.548 & 6.9\\
+R1200 & $(4,8)$ & 6 & $1,200$ & $1,564$ & 47.418 & 4.171 & 24.667 & 6.5\\
+P1200 & $(3,6)$ & 8 & $1,200$ & $65$ & 44.640 & 4.211 & 44.721 & 0.0\\
+P1600 & $(3,4)$ & 10 & $1,600$ & $11$ & 70.511 & 5.195 & 80.908 & 0.0\\
+Q410 & $(3,4)$ & 10 & $40,448$ & $40,448$ & 1125.038 & 128.667 & 90.153 & 7.5\\
+Q412 & $(3,4)$ & 12 & $36,352$ & $308,992$ & 2971.170 & 292.054 & 62.125 & 7.6\\
+\hline
+\end{tabular}
+\end{table*}
+
+Zero MARE indicates that exact counting finished first in every run,
+as on A128r, P1200, and P1600. Cycle-rich instances can benefit
+from sampling, whereas sparse ones may incur interleaving overhead
+before exact termination. On R1200, sampling wins all 100 runs,
+but the hybrid is slower than standalone exact counting because
+state-machine steps have unequal practical costs. At girths 10
+and 12, Q410 and Q412 use inverse sampling in every run and
+obtain lower hybrid latency than either exact method. These
+implementation-dependent results do not establish superiority
+across LDPC families.
+
+The observed MARE values around $8\%$ are consistent with a
+normal approximation to uncapped inverse sampling. Since $S_r$
+has mean $r/p$ and variance $r(1-p)/p^2$, for large $r$ the
+relative estimation error is approximately normal with variance
+$(1-p)/r$. Hence the expected absolute relative error is
+approximately $\sqrt{2(1-p)/(\pi r)}$, or about $7.94\%$ for
+$r=101$ and small $p$. This is an asymptotic approximation for
+uncapped inverse sampling, not an exact hybrid guarantee;
+exact termination can reduce the overall MARE. The guarantee
+in Theorem~\ref{thm:hybrid} concerns expected error, so a
+100-run empirical MARE may exceed $\varepsilon$.
