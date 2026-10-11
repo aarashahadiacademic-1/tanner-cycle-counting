@@ -1,3 +1,15 @@
-counter
+# Compiled binaries
+/counter
+/benchmark
+/impa_count
+
+# Generated local benchmark records
+/exact_table_rerun.csv
+/measurements_optimized.csv
+/measurements_optimized_rerun.csv
+/algorithm_sources/*timings.csv
+/algorithm_sources/added_exact_targets.csv
+
+# Python cache
 __pycache__/
-*.pyc
+*.py[cod]

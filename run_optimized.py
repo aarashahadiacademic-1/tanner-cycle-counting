@@ -1,7 +1,6 @@
-"""Re-run the manuscript's weighted-credit interleaved girth experiment.
+"""Run the interleaved girth-only method on every girth-only table instance.
 
-The archived measurements_optimized.csv is preserved. This script writes a
-fresh machine-dependent run to measurements_optimized_rerun.csv.
+This writes fresh machine-dependent timings to measurements_optimized.csv.
 """
 import csv
 import hashlib
@@ -11,19 +10,11 @@ import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parent
 GRAPHS = [
-    ("A16c", 6),
-    ("A128r", 6),
-    ("A128c", 6),
-    ("B128c", 6),
-    ("C128c", 6),
-    ("C128r", 6),
-    ("D16c", 8),
-    ("R1200", 6),
-    ("R2400", 6),
-    ("P1200", 8),
-    ("P1600", 10),
-    ("Q410", 10),
-    ("Q412", 12),
+    ("A16c", 6), ("A128r", 6), ("A128c", 6), ("B128c", 6),
+    ("C128c", 6), ("D16c", 8), ("R1200", 6), ("P1200", 8),
+    ("P1600", 10), ("Q410", 10), ("Q412", 12),
+    # Additional girth-only rows present in the current manuscript table.
+    ("C128r", 6), ("R2400", 6),
 ]
 FIELDS = [
     "graph", "dv", "dc", "g", "n", "Ng", "kb_ms",
@@ -39,7 +30,7 @@ def main():
         "g++", "-std=c++17", "-O3", "interleaved_optimized.cpp",
         "-o", "benchmark",
     ], cwd=ROOT, check=True)
-    output = ROOT / "measurements_optimized_rerun.csv"
+    output = ROOT / "measurements_optimized.csv"
     with output.open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=FIELDS)
         writer.writeheader()
