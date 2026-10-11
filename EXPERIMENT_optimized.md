@@ -6,7 +6,7 @@ This file documents the table data and rerun procedures.
 
 `paper_table1_exact_20261011.csv` preserves the graph rows, counts, and
 reported timings in Table 1. `paper_table2_hybrid_20261011.csv` is rounded to
-two decimal places from the archived `measurements_optimized.csv) record and
+two decimal places from the archived `measurements_optimized.csv` record and
 can be compared row by row against it. The CSV measurement file stores the
 higher-precision aggregate values; it is not a per-repetition log.
 
@@ -26,7 +26,7 @@ python3 generate_qc.py
 python3 run_optimized.py
 ```
 
-The runner compiles `interleaved_optimized.cpp` with C++17 and `-O3), then
+The runner compiles `interleaved_optimized.cpp` with C++17 and `-O3`, then
 writes a fresh 100-run aggregate to `measurements_optimized_rerun.csv`. The
 archived `measurements_optimized.csv` records the October 10 run with
 `epsilon=0.08`, `r=101`, and `Q=4096`.
