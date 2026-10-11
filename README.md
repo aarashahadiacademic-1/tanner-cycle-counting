@@ -4,12 +4,12 @@ Code, graph definitions, realized edge lists, validation records, and timing dat
 
 ## Manuscript tables and current hybrid
 
-- `paper_table1_exact_20261011.csv` and `paper_table2_hybrid_20261011.csv` preserve the rows, counts, and aggregate timings printed in the manuscript. They are table snapshots, not per-repetition logs.
-- `interleaved_optimized.cpp`, `run_optimized.py`, and `measurements_optimized.csv` contain the weighted-credit Q=4096 implementation, deterministic rerun procedure, and archived 100-repetition record.
-- `run_exact_table.py` reruns the exact-versus-Karimi–Banihashemi targets in Table 1 and writes fresh results to `exact_table_rerun.csv`.
-- `EXPERIMENT_optimized.md` explains the settings, work-credit model, and relationship between snapshots and measurements.
+- [Table 1 data](paper_table1_exact_20261011.csv) preserves the graph rows, counts, and reported timings in the manuscript.
+- [Table 2 data](paper_table2_hybrid_20261011.csv) is rounded to two decimals from the archived Q=4096 measurements in [measurements_optimized.csv](measurements_optimized.csv).
+- `interleaved_optimized.cpp`, `run_optimized.py`, and `run_exact_table.py` provide the current implementation and rerun procedures.
+- `EXPERIMENT_optimized.md` documents the settings and how the table snapshots relate to the data.
 
-The archived Q=4096 record uses the manuscript's eleven graph instances and configuration (`epsilon=0.08`, `r=101`, `Q=4096`, 100 repetitions), but its measured runtimes differ from the manuscript snapshot. The snapshots preserve the printed paper values; the archive preserves a separate measured run. Fresh timings depend on machine and load. These records must not be described as interchangeable or as raw repetitions of the table snapshot.
+The hybrid configuration is `epsilon=0.08`, `r=101`, `Q=4096`, with 100 repetitions. The archived CSV stores the aggregate measurements; the table snapshot rounds its KB time, recursive exact time, hybrid time, and MARE. Fresh timings depend on machine and load, and fresh sampling outcomes can vary by seed. The exact table snapshot preserves the manuscript's reported values; the runner writes fresh seven-run medians.
 
 ## Graphs and verification
 
