@@ -1,27 +1,28 @@
 # Tanner-graph cycle counting — reproducibility materials
 
-Code, graph generators, realized edge lists, validation tools, and measurement records for exact cycle counting and single-processor interleaved inverse-sampling experiments on Tanner graphs.
+Code, graph definitions, realized edge lists, validation records, and timing data for exact and randomized Tanner-graph cycle counting.
 
-## Key files
+## October 11 manuscript tables
 
-- `counter.cpp`: exact local BFS/DFS counting and the independent Karimi–Banihashemi benchmark implementation. It also contains a **legacy pilot-and-cap** routine, which is **not** the current interleaved hybrid.
-- `interleaved_threeway.cpp`: resumable, single-processor exact-versus-sampling implementation (no pilot or cap).
-- `run_three_way.py` and `three_way_interleaved_11.csv`: saved eleven-graph interleaved run, with `epsilon=0.08`, `r=101`, and `Q=256`. These are a **separate measured configuration**, not the manuscript's `Q=4096` work-credit configuration; do not substitute their runtimes for manuscript entries.
-- `generate.py`, `generate_diverse.py`, `generate_qc.py` and `manifest*.json`: graph definitions and parameters.
-- `graphs/`: supplied edge lists for standard and correctness-test instances. Q410 and Q412 are generated using `generate_qc.py`; see `manifest_qc.json` for hashes.
-- `verify.py`, `verify_diverse.py`, `verify_extended.py`, `verification*.json`: checks and recorded validation.
-- `counter_qc.cpp` and `run_qc.py`: additional high-girth verification/measurement utilities.
-- `results.json`, `results_qc.json`, `table1_exact.csv`, `table2_hybrid.csv`, `export_tables.py`, `run_tables.py`: preserved earlier exact/KB and pilot-and-cap measurement records. **Do not interpret `table2_hybrid.csv` as a single-processor interleaved result.**
+- `paper_table1_exact_20261011.csv` and `paper_table2_hybrid_20261011.csv` are row-by-row snapshots of the submitted manuscript tables. They preserve the reported counts and aggregate timings; they are table snapshots, not raw per-repetition logs.
+- `interleaved_optimized.cpp`, `run_optimized.py`, and `measurements_optimized.csv` provide the weighted-credit single-processor interleaved implementation, rerun script, and archived Q=4096 measurement record.
+- `run_exact_table.py` reruns the exact-versus-Karimi–Banihashemi targets in Table 1 and writes fresh results to `exact_table_rerun.csv`.
+- `EXPERIMENT_optimized.md` documents the settings, cost model, and relationship between the manuscript snapshots and the archived/rerun measurements.
 
-## Re-run the preserved eleven-graph interleaved measurement
+The archived Q=4096 record uses the same eleven graph instances and reported configuration (`epsilon=0.08`, `r=101`, `Q=4096`, 100 repetitions). Its timing values differ from the manuscript's table snapshot. The snapshots preserve the values printed in the manuscript; the archived record preserves a separate measured run. Fresh reruns are machine- and load-dependent. Do not present these timing records as interchangeable or describe the table snapshots as raw repetitions.
 
-```sh
-g++ -std=c++17 -O3 interleaved_threeway.cpp -o interleaved_threeway
-python3 run_three_way.py
-```
+## Earlier or separate measurements
 
-The runner creates `three_way_interleaved_rerun.csv` using the same graph instances and Q=256. Wall-clock measurements depend on the machine and its load. Build and run the exact/KB checks with `counter.cpp` and the supplied graph lists as appropriate. Do not compile the checking programs with `-DNDEBUG`, because some validation assertions also execute checks.
+- `interleaved_threeway.cpp`, `run_three_way.py`, and `three_way_interleaved_11.csv` record the preliminary Q=256 implementation/run. They are not the manuscript's Q=4096 weighted-credit configuration.
+- `counter.cpp` includes a legacy pilot-and-cap routine. `table2_hybrid.csv` is from that earlier method and is not the current single-processor interleaved result.
+- `table1_exact.csv`, `results.json`, `results_qc.json`, `export_tables.py`, and `run_tables.py` preserve earlier exact/KB and pilot-and-cap records.
 
-All graphs are synthetic Tanner-graph instances, not standardized LDPC codes. Data from distinct scheduling policies, code versions, or quantum sizes must not be presented as interchangeable.
+## Graphs and validation
 
-Only actively referenced source, graph, validation, and measurement materials are retained at the repository root. Prior exploratory scripts, reports, and drafts were removed from the current tree; earlier commits retain their history.
+- `generate.py`, `generate_diverse.py`, `generate_qc.py`, and `manifest*.json` specify graph families and parameters.
+- `graphs/` contains supplied edge lists for the benchmark and validation instances. Q410 and Q412 are generated using `generate_qc.py`; see `manifest_qc.json` for their hashes.
+- `verify.py`, `verify_diverse.py`, `verify_extended.py`, `verification*.json`, `counter_qc.cpp`, and `run_qc.py` contain additional verification utilities and records.
+
+Run `python3 run_exact_table.py` and `python3 run_optimized.py` from the repository root to generate fresh machine-dependent records. Do not compile checking programs with `-DNDEBUG`, because some validation assertions also execute checks.
+
+All graphs are synthetic Tanner-graph instances, not standardized LDPC codes. Results from different scheduling policies, code versions, or quantum sizes are distinct measurements.
