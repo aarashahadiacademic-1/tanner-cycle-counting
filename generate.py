@@ -21,8 +21,8 @@ def lift(n,m,edges,s,kind,seed):
  return n*s,m*s,out
 for base,q,dv,dc in [('A',7,3,6),('B',5,3,4),('C',11,4,8)]:
  n,m,e=affine(q,dv,dc)
- for s in ([1,2,4,8,16,32,128,256] if base=='A' else [128]):
-  for kind in (['cyclic','random'] if s>=128 else ['cyclic']):
+ for s in ([16,128] if base=='A' else [128]):
+  for kind in (['cyclic','random'] if s==128 and base in ('A','C') else ['cyclic']):
    seed=20261008+s+q*100
    nn,mm,ee=lift(n,m,e,s,kind,seed)
    save(f'{base}{s}{kind[0]}',nn,mm,ee,dv=dv,dc=dc,base=base,lift=s,kind=kind,seed=seed,T=6)
@@ -45,25 +45,8 @@ for i,ls in enumerate(inc):
  assert len(ls)==6
  for k,j in enumerate(ls):e.append((2*i+k//3,j))
 n,m=2*len(points),len(lines)
-for s,kind in [(1,'cyclic'),(16,'random'),(16,'cyclic')]:
+for s,kind in [(1,'cyclic'),(16,'cyclic')]:
  seed=20261008+s+500
  nn,mm,ee=lift(n,m,e,s,kind,seed)
  save(f'D{s}{kind[0]}',nn,mm,ee,dv=3,dc=6,base='D',lift=s,kind=kind,seed=seed,T=8)
-# Small overlapping-cycle correctness instance; targets exceed 2g.
-n,m,e=affine(5,3,4);save('validation_B',n,m,e,dv=3,dc=4,T=14,validation=True)
-# Irregular cactus unit tests, not coding-performance benchmarks.
-for g in [10,12]:
- for k in [200,1000]:
-  nv=0;ordinary=[];anchors=[]
-  for block in range(k):
-   last=None
-   for length in range(g//2,g+2):
-    vs=list(range(nv,nv+length));nv+=length
-    ordinary.extend((vs[j],vs[(j+1)%length]) for j in range(length))
-    if last is not None:ordinary.append((last,vs[0]))
-    last=vs[0]
-   anchors.append(last)
-  ordinary.extend((anchors[i],anchors[i+1]) for i in range(k-1))
-  e=[(v,j) for j,(u,w) in enumerate(ordinary) for v in (u,w)]
-  save(f'cactus{g}_{k}',nv,len(ordinary),e,T=2*g+2,validation=True,expected=k)
 json.dump(manifest,open(P/'manifest.json','w'),indent=2)

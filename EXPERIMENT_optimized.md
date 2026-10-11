@@ -1,44 +1,15 @@
-# October 11 manuscript experiment record
+# Section 4 experiment record
 
-This file documents the table data and rerun procedures.
+`paper_table_current.tex` and `paper_table_current.csv` are the consolidated manuscript table snapshots. The CSV has one row per graph and target. `Girth only` rows report only the target `T=g`; `Multiple cycle lengths` rows report the listed count tuple through `T`.
 
-## Table snapshots
+The table compares selected algorithms for which published descriptions and implementation details were sufficiently accessible for an independent implementation and count validation. It is not an exhaustive implementation of every method cited in the paper. KB, IMPA, and our exact method count the same requested targets. The hybrid experiment counts only `N_g` and reports mean runtime and MARE over 100 runs; KB and standalone Exact are medians of seven runs.
 
-`paper_table1_exact_20261011.csv` preserves the graph rows, counts, and
-reported timings in Table 1. `paper_table2_hybrid_20261011.csv` is rounded to
-two decimal places from the archived `measurements_optimized.csv` record and
-can be compared row by row against it. The CSV measurement file stores the
-higher-precision aggregate values; it is not a per-repetition log.
+The comparison implementations follow the cited algorithms but are not the original authors' software. Technical implementation choices can differ from the authors' own code. The main exact/KB/hybrid measurements and the recorded IMPA measurements have their compiler and run details in their respective source records; specifically, the IMPA timing record was produced with g++ 13.3.0. The manuscript's general benchmark description lists g++ 14.2 for its main measurements. Fresh runs are provided for audit and may have different times due to compiler, CPU scheduling, and machine load.
 
-## Exact-versus-KB rerun
+## Reruns
 
-Run `python3 run_exact_table.py`. It compiles `counter.cpp`, checks each
-target with the exact and Karimi--Banihashemi implementations, and writes
-fresh seven-run medians to `exact_table_rerun.csv`. Timings are machine- and
-load-dependent; the snapshot preserves the manuscript's reported values.
+- `python3 run_exact_table.py` compiles `counter.cpp` and measures all exact-table graph/target pairs, including the KB baseline.
+- `python3 run_optimized.py` compiles `interleaved_optimized.cpp` and runs 100 hybrid repetitions for each girth-only graph in the table.
+- `python3 algorithm_sources/run_impa_bench.py` recompiles `impa_count.cpp` and records seven IMPA timing runs per configured target.
 
-## Interleaved hybrid rerun
-
-First generate Q410/Q412 edge lists, then run the eleven hybrid instances:
-
-```sh
-python3 generate_qc.py
-python3 run_optimized.py
-```
-
-The runner compiles `interleaved_optimized.cpp` with C++17 and `-O3`, then
-writes a fresh 100-run aggregate to `measurements_optimized_rerun.csv`. The
-archived `measurements_optimized.csv` records the October 10 run with
-`epsilon=0.08`, `r=101`, and `Q=4096`.
-
-The scheduler assigns one credit per exact adjacency inspection and eight
-credits per sampled non-backtracking edge traversal. It can suspend inside
-BFS, residual-path scans, and walks. Eight credits is an empirical calibration,
-not a machine-independent instruction-count equivalence. The weighted-work
-ratio in the measurements is relative to the same resumable exact engine; it
-does not imply a wall-clock or CPU-instruction bound.
-
-Fresh reruns can differ in timing because of machine and system load; sampling
-outcomes can also vary with the seed. The archived measurement record and the
-Table 2 snapshot in this repository are aligned after rounding to two decimal
-places.
+All graph construction is untimed. The data files preserve the table snapshot and the IMPA timing records; a fresh runner output is a new measurement, not a replacement for the reported snapshot.
